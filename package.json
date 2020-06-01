@@ -4,6 +4,7 @@
   "description": "",
   "main": "client.js",
   "dependencies": {
+    "express": "^4.17.1",
     "google-shopping-list": "^1.0.3",
     "node": "^14.3.0"
   },

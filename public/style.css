@@ -1,0 +1,13 @@
+
+body{
+    height: 100%;
+    height: 100%;    
+}
+.preloaderGif {
+  background-image: url(/preloader_image.gif);
+  background-position: 50% 7%;
+  background-repeat: no-repeat;
+}
+.oneItem {
+  border: 2px solid red;
+}
