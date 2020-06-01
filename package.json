@@ -1,0 +1,16 @@
+{
+  "name": "get_shopping_list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client.js",
+  "dependencies": {
+    "google-shopping-list": "^1.0.3",
+    "node": "^14.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Julia",
+  "license": "ISC"
+}
