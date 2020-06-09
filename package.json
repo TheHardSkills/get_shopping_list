@@ -5,8 +5,10 @@
   "main": "client.js",
   "dependencies": {
     "express": "^4.17.1",
-    "google-shopping-list": "^1.0.3",
-    "node": "^14.3.0"
+    "fs-extra": "^9.0.1",
+    "node": "^14.3.0",
+    "puppeteer": "^3.3.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {},
   "scripts": {
