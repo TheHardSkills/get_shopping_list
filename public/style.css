@@ -1,7 +1,6 @@
-
-body{
-    height: 100%;
-    height: 100%;    
+body {
+  height: 100%;
+  height: 100%;
 }
 .preloaderGif {
   background-image: url(/preloader_image.gif);
@@ -10,4 +9,10 @@ body{
 }
 .oneItem {
   border: 1px solid red;
+}
+.oneItemDel {
+  border: 1px solid green;
+}
+.oneItemTest{
+  border:1px solid yellow;
 }

@@ -1,8 +1,10 @@
 const googleshoppinglist = require('./google-shopping-list/index');
 const express = require('express');
 const accessSettings = require('./public/settings.js');
+const MongoClient = require('mongodb').MongoClient;
 
-//Creating a server and displaying list items
+const url = "mongodb://localhost:27017/";
+const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
 
 const app = express();
 app.use(express.static('./public'));
@@ -35,56 +37,36 @@ app.get("/getList", function (request, response) {
         });
     }
     res1();
-
 });
 
-
-app.listen(3000, "127.0.0.1", function () {
-    console.log("Server started listening for requests on port 3000");
+app.get("/deleteList", function (request, response) {
+    response.send("Delete it");
 });
 
-/***********************************************************************************/
-
-/*
-//Testing a method to remove items from a list
-
-async function res() {
-    let exportSettings = {
-        email: accessSettings.email,
-        password: accessSettings.password
-    };
-
-    const creedsResult1 = await googleshoppinglist.openShoppingList(exportSettings);
-    const creedsResult2 = await googleshoppinglist.openShoppingList(exportSettings);
-
-    const listRes = async function () {
-        let shoppingListItems = [];
-        await googleshoppinglist.getList(creedsResult1).then(result => {
-            let countsOfKey = 1;
-            let itemsArr = [];
-            result.map(function (num) {
-                let numb = countsOfKey;
-                let name = num;
-                countsOfKey++;
-                itemsArr.push({ numb, name });
-                shoppingListItems.push(num);
-            });
-        });
-        return shoppingListItems;
-    };
-
-    const resultItems = await listRes();
-    let arrayOfItemsToBeRemoved = ["Манго", "Молоко"];
-    await googleshoppinglist.deleteListItems(creedsResult2, resultItems, arrayOfItemsToBeRemoved).then(result => {
-        if (result === true) {
-            console.log('Checked items are removed from the list');
-        }
-        else {
-            console.log("Error deleting list items");
-        }
+mongoClient.connect(function (err, client) {
+    if (err) return console.log(err);
+    dbClient = client;
+    app.locals.collection = client.db("fooddb").collection("food");
+    app.listen(3000, function () {
+        console.log("Server started listening for requests on port 3000");
     });
-};
-res();
-*/
+});
+
+app.get("/api/food", function (req, res) {
+
+    const collection = req.app.locals.collection;
+    collection.find({}).toArray(function (err, food) {
+
+        if (err) return console.log(err);
+        res.send(food)
+    });
+});
+
+/*process.on("SIGINT", () => {
+    dbClient.close();
+    process.exit();
+});*/
+
+
 
 
