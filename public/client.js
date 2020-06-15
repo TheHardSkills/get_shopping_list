@@ -51,7 +51,6 @@ fetch('http://localhost:3000/getList', { //todo: relative path
     });
 
 const deleteFunction = () => {
-    //now just displays the selected items to the console
     let checkedValue = [];
     const inputElements = document.getElementsByClassName('itemWithCheckbox');
     for (let i = 0; i < inputElements.length; i++) {
@@ -66,4 +65,16 @@ const deleteFunction = () => {
 const getOptions = (itemId) => {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
+
+    fetch('/api/getproductoptiondata', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(response => response.map(nameOfProduct => {
+            console.log('- ' + nameOfProduct);
+        }));
+
 }
