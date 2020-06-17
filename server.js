@@ -2,7 +2,7 @@ const googleshoppinglist = require('./google-shopping-list/index');
 const express = require('express');
 const accessSettings = require('./public/settings.js');
 const MongoClient = require('mongodb').MongoClient;
-const request = require('request');
+const GlovoAPI = require('./glovo_api_service.js');
 
 const url = "mongodb://localhost:27017/";
 const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
@@ -63,32 +63,8 @@ app.get("/api/food", function (req, res) {
     });
 });
 
-request({
-    url: accessSettings.url,
-    method: 'GET',
-    headers: accessSettings.headers
-}, function (error, response, body) {
-    if (error) {
-        console.log(error);
-        return null;
-    } else {
-        let arrOfName = [];
-        const resp = response.body;
-        const result = JSON.parse(resp);
-        const resArr = result.results[0].products;
-
-
-        resArr.map(nameOfProduct => {
-            arrOfName.push(nameOfProduct.name)
-        });
-        console.log("arrOfName");
-        console.log(arrOfName);
-        app.get("/api/getproductoptiondata", function (req, res) {
-            res.send(arrOfName);
-        });
-
-    }
-});
+const glovoAPI = new GlovoAPI();
+let baseResult = glovoAPI.getSearch('varus', 'молоко');
 
 /*process.on("SIGINT", () => {
     dbClient.close();
