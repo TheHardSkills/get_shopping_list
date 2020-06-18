@@ -24,9 +24,7 @@ class GlovoAPI {
     }
     async getAccessToken() {
         const token = await this.getToken();
-        //-console.log(token);
         let accessToken = token.access.accessToken;
-        //console.log(typeof accessToken);
         return accessToken;
     }
     async getRefreshToken() {
@@ -35,7 +33,6 @@ class GlovoAPI {
 
         let resultInText = '';
         let result = {};
-        //setInterval(() => {
         let response = await fetch('https://api.glovoapp.com/oauth/refresh', {
             method: 'POST',
             headers: {
@@ -48,11 +45,6 @@ class GlovoAPI {
         });
         resultInText = await response.text();
         result = JSON.parse(resultInText);
-
-        //return result;
-        //},1198);
-        //-console.log('result');
-        //-console.log(result);
         return result;
 
     }
@@ -81,15 +73,11 @@ class GlovoAPI {
             selectedStore.stores = metro.stores;
             selectedStore.addresses = metro.addresses;
         }
-        //console.log('selectedStore');
-        //console.log(selectedStore);
 
         let stores = selectedStore.stores;
         let addresses = selectedStore.addresses;
         let url = `https://api.glovoapp.com/v3/stores/${stores}/addresses/${addresses}/search?query=${item}`;
         let encodedUrl = encodeURI(url);
-        console.log("encodedUrl");
-        console.log(encodedUrl);
         return encodedUrl;
     }
 
@@ -109,35 +97,20 @@ class GlovoAPI {
 
         let refreshAccessToken = await this.accessTokenRefresher(); //todo: refresh after 19 min
 
-        request({ //todo: fetch
-            url: url,
-            method: 'GET',
+        let fetchResult = await fetch(url, {
             headers: refreshAccessToken.headers
-        }, function (error, response, body) {
-            if (error) {
-                console.log(error);
-                return null;
-            } else {
-                let arrOfName = [];
-                const resp = response.body; //рассмотреть ответ - bad bad request
-                const result = JSON.parse(resp);
-                let error = result.error;
-                //if error - обновить токен
-                const resArr = result.results[0].products;
-
-
-                resArr.map(nameOfProduct => {
-                    arrOfName.push(nameOfProduct.name)
-                });
-                console.log("arrOfName");
-                console.log(arrOfName);
-                // app.get("/api/getproductoptiondata", function (req, res) {
-                //     res.send(arrOfName);
-                // });
-
-            }
         });
+        let jsonWithResults = await fetchResult.json();
 
+        //todo: consider the answer - bad request
+        //todo: if error - refresh token
+        let arrOfName = [];
+        const resArr = jsonWithResults.results[0].products;
+
+        resArr.map(nameOfProduct => {
+            arrOfName.push(nameOfProduct.name)
+        });
+        return arrOfName;
     }
 }
 

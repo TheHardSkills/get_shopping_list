@@ -21,7 +21,6 @@ app.get("/getList", function (request, response) {
 
         googleshoppinglist.getList(creedsResult1).then(result => {
             const countOfItemsInShoppingList = (Object.keys(result)).length;
-            console.log(countOfItemsInShoppingList);
             let countsOfKey = 1;
             let itemsArr = [];
 
@@ -29,8 +28,6 @@ app.get("/getList", function (request, response) {
                 let numb = countsOfKey;
                 let name = num;
                 countsOfKey++;
-                console.log(num);
-                console.log(typeof num);
                 itemsArr.push({ numb, name });
             });
             const itemsArrInJSON = JSON.stringify(itemsArr);
@@ -63,8 +60,28 @@ app.get("/api/food", function (req, res) {
     });
 });
 
-const glovoAPI = new GlovoAPI();
-let baseResult = glovoAPI.getSearch('varus', 'молоко');
+/*async function a() {
+    const glovoAPI = new GlovoAPI();
+    let baseResult = await glovoAPI.getSearch('varus', 'молоко');
+    console.log('baseResult');
+    console.log(baseResult);
+}
+a();*/
+
+app.get(`/api/searchItems`, function (req, res) {
+
+    async function getVariants() {
+        var shop = req.query.store;
+        var searchWord = req.query.seachWord;
+        const glovoAPI = new GlovoAPI();
+        let baseResult = await glovoAPI.getSearch(shop, searchWord);
+        console.log(baseResult);
+        res.send(baseResult);
+    }
+    getVariants();
+
+});
+
 
 /*process.on("SIGINT", () => {
     dbClient.close();

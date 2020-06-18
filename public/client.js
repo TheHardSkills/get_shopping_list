@@ -17,7 +17,11 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let divForItem = document.createElement('div');
             let pForItem = document.createElement('p');
             let br = document.createElement('br');
-            let detailsButton = document.createElement('input');
+            /*let detailsButton = document.createElement('input');*/
+
+            let varus = document.createElement('input');
+            let ashan = document.createElement('input');
+            let metro = document.createElement('input');
 
             let input = document.createElement('input');
             input.type = "checkbox";
@@ -31,13 +35,46 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             pForItem.append(input);
             pForItem.append(br);
 
-            detailsButton.type = "button";
-            detailsButton.value = "Variant";
-            detailsButton.onclick = () => { getOptions(itemId) };
+            /*detailsButton.type = "button";
+            detailsButton.value = "Variant";*/
+
+            // let divId = divForItem.id = "divForOneItem" + oneListItem.numb;
+            let varusId = varus.id = "varus" + oneListItem.numb;
+            let ashanId = ashan.id = "ashan" + oneListItem.numb;
+            let metroId = metro.id = "metro" + oneListItem.numb;
+
+            /*detailsButton.onclick = () => { getOptions(itemId) };*/
+
+
+            varus.type = "button";
+            let varusValue = varus.value = "varus";
+            varus.id = "varusStore";
+            varus.visibility = "hidden";
+            varus.onclick = () => { getNameOfTheStore(varusValue, itemId) };
+
+
+
+            ashan.type = "button";
+            let ashanValue = ashan.value = "ashan";
+            ashan.id = "ashanStore";
+            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId) };
+
+
+            metro.type = "button";
+            let metroValue = metro.value = "metro";
+            metro.id = "metroStore";
+            metro.onclick = () => { getNameOfTheStore(metroValue, itemId) };
+
 
             divForItem.className = "divForOneItem";
+
             divForItem.append(pForItem);
-            divForItem.append(detailsButton);
+            /*divForItem.append(detailsButton);*/
+
+            divForItem.append(varus);
+            divForItem.append(ashan);
+            divForItem.append(metro);
+
             p[0].append(divForItem);
         });
         let p = document.createElement('p');
@@ -62,19 +99,24 @@ const deleteFunction = () => {
     console.log(checkedValue);
 };
 
-const getOptions = (itemId) => {
+async function getNameOfTheStore (store, itemId){
     const value = document.getElementById(itemId).innerText;
     console.log(value);
+    console.log(store);
 
-    fetch('/api/getproductoptiondata', {
+    let itemOptions = await fetch(`/api/searchItems?store=${store}&seachWord=${value}`, {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-    })
-        .then(response => response.json())
-        .then(response => response.map(nameOfProduct => {
-            console.log('- ' + nameOfProduct);
-        }));
-
+    });
+    let jsonWithResults = await itemOptions.json();
+    console.log(jsonWithResults);
 }
+
+/*const getOptions = (itemId) => {
+    const value = document.getElementById(itemId).innerText;
+    console.log(value);
+}*/
+
+
