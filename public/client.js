@@ -16,6 +16,9 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let p = document.getElementsByClassName("listItemsData");
             let divForItem = document.createElement('div');
             let divForProductOption = document.createElement('div');
+            let divForProductOptionWraper = document.createElement('div');
+            let leftArrow = document.createElement('a');
+            let rightArrow = document.createElement('a');
 
             let pForItem = document.createElement('p');
             let br = document.createElement('br');
@@ -36,36 +39,44 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             pForItem.append(input);
             pForItem.append(br);
 
-            varus.id = "varus" + oneListItem.numb;
-            ashan.id = "ashan" + oneListItem.numb;
-            metro.id = "metro" + oneListItem.numb;
+            divForProductOptionWraper.className = "slider";
 
-            divForProductOption.className = "divForOneProductOption ";
+
+            divForProductOption.className = "divForOneProductOption slider__wrapper"; //* slider__wrapper
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
+
+            divForItem.className = "divForOneItem";
+            let divForItemId = divForItem.id = "divForItem" + oneListItem.numb
 
             varus.type = "button";
             let varusValue = varus.value = "varus";
-            varus.id = "varusStore";
             varus.visibility = "hidden";
-            varus.onclick = () => { getNameOfTheStore(varusValue, itemId, productOptionsDiv) };
+            varus.onclick = () => { getNameOfTheStore(varusValue, itemId, productOptionsDiv, divForItemId) };
 
             ashan.type = "button";
             let ashanValue = ashan.value = "ashan";
-            ashan.id = "ashanStore";
-            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId, productOptionsDiv) };
+            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId, productOptionsDiv, divForItemId) };
 
             metro.type = "button";
             let metroValue = metro.value = "metro";
-            metro.id = "metroStore";
-            metro.onclick = () => { getNameOfTheStore(metroValue, itemId, productOptionsDiv) };
+            metro.onclick = () => { getNameOfTheStore(metroValue, itemId, productOptionsDiv, divForItemId) };
 
-            divForItem.className = "divForOneItem";
+            leftArrow.className = "slider__control slider__control_left";
+            leftArrow.href = "#";
+            leftArrow.role = "button";
+
+            rightArrow.className = "slider__control slider__control_right slider__control_show";
+            rightArrow.href = "#";
+            rightArrow.role = "button";
 
             divForItem.append(pForItem);
             divForItem.append(varus);
             divForItem.append(ashan);
             divForItem.append(metro);
-            divForItem.append(divForProductOption);
+            divForItem.append(divForProductOptionWraper);
+            divForProductOptionWraper.append(divForProductOption);
+            divForProductOptionWraper.append(leftArrow);
+            divForProductOptionWraper.append(rightArrow);
             p[0].append(divForItem);
         });
 
@@ -91,7 +102,7 @@ const deleteFunction = () => {
     console.log(checkedValue);
 };
 
-async function getNameOfTheStore(store, itemId, productOptionsDiv) {
+async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId) {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
     console.log(store);
@@ -104,30 +115,29 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv) {
     });
     let jsonWithResults = await itemOptions.json();
 
-    let imgId = 0; //todo: change name
+    let idCounter = 0;
     jsonWithResults.map(oneOfItem => {
         let divForOne = document.getElementById(productOptionsDiv);
 
         let divForInfoAboutOneItem = document.createElement('div');
-        divForInfoAboutOneItem.className = "divForInfoAboutOneItem ";
+        divForInfoAboutOneItem.className = "divForInfoAboutOneItem slider__item"; //* slider__item
 
-        let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + imgId;
+        let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + idCounter;
         divForOne.append(divForInfoAboutOneItem);
 
-        //let divForInfoAboutOneItem = document.getElementById(divForInfoAboutOneItemId);
         let imgOfProduct = document.createElement('img');
         imgOfProduct.className = "imgOfProduct";
-        let imgOfProductId = imgOfProduct.id = "imgOfProduct" + imgId;
+        let imgOfProductId = imgOfProduct.id = "imgOfProduct" + idCounter;
         divForInfoAboutOneItem.append(imgOfProduct);
 
         let nameOfProduct = document.createElement('p');
         nameOfProduct.className = "nameOfProduct";
-        let nameOfProductId = nameOfProduct.id = "nameOfProduct" + imgId;
+        let nameOfProductId = nameOfProduct.id = "nameOfProduct" + idCounter;
         divForInfoAboutOneItem.append(nameOfProduct);
 
         let priceOfProduct = document.createElement('p');
         priceOfProduct.className = "priceOfProduct";
-        let priceOfProductId = priceOfProduct.id = "priceOfProduct" + imgId;
+        let priceOfProductId = priceOfProduct.id = "priceOfProduct" + idCounter;
         divForInfoAboutOneItem.append(priceOfProduct);
         divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };
 
@@ -136,8 +146,86 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv) {
         document.getElementById(priceOfProductId).innerText = oneOfItem.price;
         let img = document.getElementById(imgOfProductId);
         img.src = oneOfItem.imageUrl;
-        imgId++;
+        idCounter++;
     });
+
+    const multiItemSlider = (function () {
+        return function (selector, neededParent) {
+            const parent = document.getElementById(neededParent);
+            const
+                _mainElement = parent.querySelector(selector),
+                _sliderWrapper = _mainElement.querySelector('.slider__wrapper'),
+                _sliderItems = _mainElement.querySelectorAll('.slider__item'),
+                _sliderControls = _mainElement.querySelectorAll('.slider__control'),
+                _sliderControlLeft = _mainElement.querySelector('.slider__control_left'),
+                _sliderControlRight = _mainElement.querySelector('.slider__control_right'),
+                _wrapperWidth = parseFloat(getComputedStyle(_sliderWrapper).width),
+                _itemWidth = parseFloat(getComputedStyle(_sliderItems[0]).width);
+            let _positionLeftItem = 0,
+                _transform = 0;
+            const _step = _itemWidth / _wrapperWidth * 100,
+                _items = [];
+            _sliderItems.forEach(function (item, index) {
+                _items.push({ item: item, position: index, transform: 0 });
+            });
+            const position = {
+                getMin: 0,
+                getMax: _items.length - 1,
+            }
+            const _transformItem = function (direction) {
+                if (direction === 'right') {
+                    if ((_positionLeftItem + _wrapperWidth / _itemWidth - 1) >= position.getMax) {
+                        return;
+                    }
+                    if (!_sliderControlLeft.classList.contains('slider__control_show')) {
+                        _sliderControlLeft.classList.add('slider__control_show');
+                    }
+                    if (_sliderControlRight.classList.contains('slider__control_show') && (_positionLeftItem + _wrapperWidth / _itemWidth) >= position.getMax) {
+                        _sliderControlRight.classList.remove('slider__control_show');
+                    }
+                    _positionLeftItem++;
+                    _transform -= _step;
+                }
+                if (direction === 'left') {
+                    if (_positionLeftItem <= position.getMin) {
+                        return;
+                    }
+                    if (!_sliderControlRight.classList.contains('slider__control_show')) {
+                        _sliderControlRight.classList.add('slider__control_show');
+                    }
+                    if (_sliderControlLeft.classList.contains('slider__control_show') && _positionLeftItem - 1 <= position.getMin) {
+                        _sliderControlLeft.classList.remove('slider__control_show');
+                    }
+                    _positionLeftItem--;
+                    _transform += _step;
+                }
+                _sliderWrapper.style.transform = 'translateX(' + _transform + '%)';
+            }
+            const _controlClick = function (e) {
+                if (e.target.classList.contains('slider__control')) {
+                    e.preventDefault();
+                    const direction = e.target.classList.contains('slider__control_right') ? 'right' : 'left';
+                    _transformItem(direction);
+                }
+            };
+            const _setUpListeners = function () {
+                _sliderControls.forEach(function (item) {
+                    item.addEventListener('click', _controlClick);
+                });
+            }
+            _setUpListeners();
+            return {
+                right: function () {
+                    _transformItem('right');
+                },
+                left: function () {
+                    _transformItem('left');
+                }
+            }
+        }
+    }());
+
+    multiItemSlider('.slider', divForItemId);
 }
 
 const chooseProduct = (productId, nameOfProductId) => {
