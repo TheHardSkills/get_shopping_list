@@ -60,14 +60,6 @@ app.get("/api/food", function (req, res) {
     });
 });
 
-/*async function a() {
-    const glovoAPI = new GlovoAPI();
-    let baseResult = await glovoAPI.getSearch('varus', 'молоко');
-    console.log('baseResult');
-    console.log(baseResult);
-}
-a();*/
-
 app.get(`/api/searchItems`, function (req, res) {
 
     async function getVariants() {
@@ -75,7 +67,6 @@ app.get(`/api/searchItems`, function (req, res) {
         var searchWord = req.query.seachWord;
         const glovoAPI = new GlovoAPI();
         let baseResult = await glovoAPI.getSearch(shop, searchWord);
-        console.log(baseResult);
         res.send(baseResult);
     }
     getVariants();

@@ -9,15 +9,16 @@ fetch('http://localhost:3000/getList', { //todo: relative path
         'Accept': 'application/json'
     }
 })
-    .then(response => response.json()) //response reading method
+    .then(response => response.json())
     .then(allListItems => {
         allListItems.map(oneListItem => {
             document.body.className = "body";
             let p = document.getElementsByClassName("listItemsData");
             let divForItem = document.createElement('div');
+            let divForProductOption = document.createElement('div');
+
             let pForItem = document.createElement('p');
             let br = document.createElement('br');
-            /*let detailsButton = document.createElement('input');*/
 
             let varus = document.createElement('input');
             let ashan = document.createElement('input');
@@ -35,48 +36,39 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             pForItem.append(input);
             pForItem.append(br);
 
-            /*detailsButton.type = "button";
-            detailsButton.value = "Variant";*/
+            varus.id = "varus" + oneListItem.numb;
+            ashan.id = "ashan" + oneListItem.numb;
+            metro.id = "metro" + oneListItem.numb;
 
-            // let divId = divForItem.id = "divForOneItem" + oneListItem.numb;
-            let varusId = varus.id = "varus" + oneListItem.numb;
-            let ashanId = ashan.id = "ashan" + oneListItem.numb;
-            let metroId = metro.id = "metro" + oneListItem.numb;
-
-            /*detailsButton.onclick = () => { getOptions(itemId) };*/
-
+            divForProductOption.className = "divForOneProductOption ";
+            let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             varus.type = "button";
             let varusValue = varus.value = "varus";
             varus.id = "varusStore";
             varus.visibility = "hidden";
-            varus.onclick = () => { getNameOfTheStore(varusValue, itemId) };
-
-
+            varus.onclick = () => { getNameOfTheStore(varusValue, itemId, productOptionsDiv) };
 
             ashan.type = "button";
             let ashanValue = ashan.value = "ashan";
             ashan.id = "ashanStore";
-            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId) };
-
+            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId, productOptionsDiv) };
 
             metro.type = "button";
             let metroValue = metro.value = "metro";
             metro.id = "metroStore";
-            metro.onclick = () => { getNameOfTheStore(metroValue, itemId) };
-
+            metro.onclick = () => { getNameOfTheStore(metroValue, itemId, productOptionsDiv) };
 
             divForItem.className = "divForOneItem";
 
             divForItem.append(pForItem);
-            /*divForItem.append(detailsButton);*/
-
             divForItem.append(varus);
             divForItem.append(ashan);
             divForItem.append(metro);
-
+            divForItem.append(divForProductOption);
             p[0].append(divForItem);
         });
+
         let p = document.createElement('p');
         let input = document.createElement('input');
         input.type = "submit";
@@ -99,7 +91,7 @@ const deleteFunction = () => {
     console.log(checkedValue);
 };
 
-async function getNameOfTheStore (store, itemId){
+async function getNameOfTheStore(store, itemId, productOptionsDiv) {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
     console.log(store);
@@ -111,12 +103,44 @@ async function getNameOfTheStore (store, itemId){
         }
     });
     let jsonWithResults = await itemOptions.json();
-    console.log(jsonWithResults);
+
+    let imgId = 0; //todo: change name
+    jsonWithResults.map(oneOfItem => {
+        let divForOne = document.getElementById(productOptionsDiv);
+
+        let divForInfoAboutOneItem = document.createElement('div');
+        divForInfoAboutOneItem.className = "divForInfoAboutOneItem ";
+
+        let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + imgId;
+        divForOne.append(divForInfoAboutOneItem);
+
+        //let divForInfoAboutOneItem = document.getElementById(divForInfoAboutOneItemId);
+        let imgOfProduct = document.createElement('img');
+        imgOfProduct.className = "imgOfProduct";
+        let imgOfProductId = imgOfProduct.id = "imgOfProduct" + imgId;
+        divForInfoAboutOneItem.append(imgOfProduct);
+
+        let nameOfProduct = document.createElement('p');
+        nameOfProduct.className = "nameOfProduct";
+        let nameOfProductId = nameOfProduct.id = "nameOfProduct" + imgId;
+        divForInfoAboutOneItem.append(nameOfProduct);
+
+        let priceOfProduct = document.createElement('p');
+        priceOfProduct.className = "priceOfProduct";
+        let priceOfProductId = priceOfProduct.id = "priceOfProduct" + imgId;
+        divForInfoAboutOneItem.append(priceOfProduct);
+        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };
+
+        let product = document.getElementById(nameOfProductId);
+        product.innerText = oneOfItem.name;
+        document.getElementById(priceOfProductId).innerText = oneOfItem.price;
+        let img = document.getElementById(imgOfProductId);
+        img.src = oneOfItem.imageUrl;
+        imgId++;
+    });
 }
 
-/*const getOptions = (itemId) => {
-    const value = document.getElementById(itemId).innerText;
-    console.log(value);
-}*/
-
-
+const chooseProduct = (productId, nameOfProductId) => {
+    let product = document.getElementById(nameOfProductId).innerText;
+    console.log(product);
+}

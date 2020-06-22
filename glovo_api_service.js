@@ -104,13 +104,21 @@ class GlovoAPI {
 
         //todo: consider the answer - bad request
         //todo: if error - refresh token
-        let arrOfName = [];
+        
         const resArr = jsonWithResults.results[0].products;
+        console.log('resArr');
+        console.log(resArr);
 
-        resArr.map(nameOfProduct => {
-            arrOfName.push(nameOfProduct.name)
+        let arrWithInfo=[];
+        resArr.map(nameOfProduct => {            
+            let objOfNameAndImg = {};
+            objOfNameAndImg.name = nameOfProduct.name;
+            objOfNameAndImg.imageUrl = nameOfProduct.imageUrl;
+            objOfNameAndImg.id=nameOfProduct.id;
+            objOfNameAndImg.price=nameOfProduct.price;
+            arrWithInfo.push(objOfNameAndImg);
         });
-        return arrOfName;
+        return arrWithInfo;
     }
 }
 
