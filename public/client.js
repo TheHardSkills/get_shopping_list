@@ -42,7 +42,7 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             divForProductOptionWraper.className = "slider";
 
 
-            divForProductOption.className = "divForOneProductOption slider__wrapper"; //* slider__wrapper
+            divForProductOption.className = "divForOneProductOption slider__wrapper";
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             divForItem.className = "divForOneItem";
@@ -120,7 +120,7 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
         let divForOne = document.getElementById(productOptionsDiv);
 
         let divForInfoAboutOneItem = document.createElement('div');
-        divForInfoAboutOneItem.className = "divForInfoAboutOneItem slider__item"; //* slider__item
+        divForInfoAboutOneItem.className = "divForInfoAboutOneItem slider__item"; 
 
         let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + idCounter;
         divForOne.append(divForInfoAboutOneItem);
@@ -229,6 +229,9 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
 }
 
 const chooseProduct = (productId, nameOfProductId) => {
-    let product = document.getElementById(nameOfProductId).innerText;
-    console.log(product);
+    let productName = document.getElementById(nameOfProductId).innerText;
+    console.log(productName);
+
+    document.getElementById(productId).style.border="1px solid green";
+
 }

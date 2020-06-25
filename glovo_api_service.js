@@ -44,11 +44,44 @@ class GlovoAPI {
             body: JSON.stringify(refreshToken)
         });
         resultInText = await response.text();
-        result = JSON.parse(resultInText);
+        result = await JSON.parse(resultInText);
         return result;
 
     }
-    generateUrl(shop, item) {
+
+    async getAffordableStores() {
+        let nowDate = new Date();
+        let timestamp = nowDate.getTime();
+
+        let refreshAccessToken = await this.accessTokenRefresher();
+        let authorization = await refreshAccessToken.accessToken;
+
+
+        let fetchResult = await fetch('https://api.glovoapp.com/v3/stores?category=GROCERIES_UA', {
+            headers: {
+                'glovo-location-city-code': 'DNP', //todo: get field from glovo
+                'glovo-language-code': 'ru',
+                'glovo-delivery-location-latitude': 'latitude',//todo: your latitude
+                'glovo-delivery-location-longitude': 'longitude',//todo: your longitude
+                'glovo-delivery-location-timestamp': timestamp,
+                'glovo-delivery-location-accuracy': '0'
+            }
+        });
+        let storeInformation = [];
+        let jsonWithResults = await fetchResult.json();
+        jsonWithResults.map(storeInformationObject => {
+            let obj = {};
+            obj.id = storeInformationObject.id;
+            obj.name = storeInformationObject.name;
+            obj.addressId = storeInformationObject.addressId;
+            storeInformation.push(obj);
+        });
+        return storeInformation;
+    }
+
+    async generateUrl(shop, item) {
+        let availability = await this.getAffordableStores();
+
         let varus = {
             stores: 86583,
             addresses: 165396
@@ -93,7 +126,7 @@ class GlovoAPI {
     }
 
     async getSearch(shop, item) {
-        let url = this.generateUrl(shop, item);
+        let url = await this.generateUrl(shop, item);
 
         let refreshAccessToken = await this.accessTokenRefresher(); //todo: refresh after 19 min
 
@@ -104,18 +137,15 @@ class GlovoAPI {
 
         //todo: consider the answer - bad request
         //todo: if error - refresh token
-        
-        const resArr = jsonWithResults.results[0].products;
-        console.log('resArr');
-        console.log(resArr);
 
-        let arrWithInfo=[];
-        resArr.map(nameOfProduct => {            
+        const resArr = jsonWithResults.results[0].products;
+        let arrWithInfo = [];
+        resArr.map(nameOfProduct => {
             let objOfNameAndImg = {};
             objOfNameAndImg.name = nameOfProduct.name;
             objOfNameAndImg.imageUrl = nameOfProduct.imageUrl;
-            objOfNameAndImg.id=nameOfProduct.id;
-            objOfNameAndImg.price=nameOfProduct.price;
+            objOfNameAndImg.id = nameOfProduct.id;
+            objOfNameAndImg.price = nameOfProduct.price;
             arrWithInfo.push(objOfNameAndImg);
         });
         return arrWithInfo;
