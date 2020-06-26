@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const request = require('request'); //todo: delete
 const accessSettings = require('./public/settings.js');
 
 

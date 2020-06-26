@@ -46,11 +46,11 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             divForItem.className = "divForOneItem";
+            debugger;
             let divForItemId = divForItem.id = "divForItem" + oneListItem.numb
 
             varus.type = "button";
             let varusValue = varus.value = "varus";
-            varus.visibility = "hidden";
             varus.onclick = () => { getNameOfTheStore(varusValue, itemId, productOptionsDiv, divForItemId) };
 
             ashan.type = "button";
@@ -102,11 +102,13 @@ const deleteFunction = () => {
     console.log(checkedValue);
 };
 
+
+debugger;
 async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId) {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
     console.log(store);
-
+    debugger;
     let itemOptions = await fetch(`/api/searchItems?store=${store}&seachWord=${value}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -139,12 +141,12 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
         priceOfProduct.className = "priceOfProduct";
         let priceOfProductId = priceOfProduct.id = "priceOfProduct" + idCounter;
         divForInfoAboutOneItem.append(priceOfProduct);
-        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };
+        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };   
 
-        let product = document.getElementById(nameOfProductId);
+        let product = document.querySelector('#'+productOptionsDiv+' #'+nameOfProductId);
         product.innerText = oneOfItem.name;
-        document.getElementById(priceOfProductId).innerText = oneOfItem.price;
-        let img = document.getElementById(imgOfProductId);
+        document.querySelector('#'+productOptionsDiv+' #'+priceOfProductId).innerText = oneOfItem.price;
+        let img = document.querySelector('#'+productOptionsDiv+' #'+imgOfProductId);
         img.src = oneOfItem.imageUrl;
         idCounter++;
     });
