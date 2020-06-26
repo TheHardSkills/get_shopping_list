@@ -7,6 +7,9 @@ const GlovoAPI = require('./glovo_api_service.js');
 const url = "mongodb://localhost:27017/";
 const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
 
+const glovoAPI = new GlovoAPI();
+glovoAPI.loadRefreshTokenWithAutoupdate();
+
 const app = express();
 app.use(express.static('./public'));
 
@@ -65,7 +68,6 @@ app.get(`/api/searchItems`, function (req, res) {
     async function getVariants() {
         var shop = req.query.store;
         var searchWord = req.query.seachWord;
-        const glovoAPI = new GlovoAPI();
         let baseResult = await glovoAPI.getSearch(shop, searchWord);
         res.send(baseResult);
     }

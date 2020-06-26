@@ -4,7 +4,22 @@ const accessSettings = require('./public/settings.js');
 
 
 class GlovoAPI {
-    constructor() { }
+    constructor() {
+        this.accessToken = undefined;
+        this.refreshToken = undefined;
+    }
+
+    async loadRefreshTokenWithAutoupdate() {
+        let refreshTokenData = await this.getToken();
+        this.accessToken = refreshTokenData.access.accessToken;
+        this.refreshToken = refreshTokenData.access.refreshToken;
+
+        setInterval(
+            async function () { await this.getNewToken() }.bind(this),
+            /*refreshTokenData.expiresIn*/1199 * 1000
+        );
+    }
+
     async getToken() {
         const accesses = accessSettings.accesses;
 
@@ -22,12 +37,12 @@ class GlovoAPI {
         const result = JSON.parse(resultInText);
         return result;
     }
-    async getAccessToken() {
-        const token = await this.getToken();
-        let accessToken = token.access.accessToken;
-        return accessToken;
-    }
-    async getRefreshToken() {
+    // async getAccessToken() {
+    //     const token = await this.getToken();
+    //     let accessToken = token.access.accessToken;
+    //     return accessToken;
+    // }
+    async getNewToken() {
         const token = await this.getToken();
         let refreshToken = { 'refreshToken': token.access.refreshToken };
 
@@ -45,24 +60,23 @@ class GlovoAPI {
         });
         resultInText = await response.text();
         result = await JSON.parse(resultInText);
-        return result;
 
+        this.accessToken = result.accessToken;
+        this.refreshToken = result.refreshToken;
     }
 
     async getAffordableStores() {
         let nowDate = new Date();
         let timestamp = nowDate.getTime();
 
-        let refreshAccessToken = await this.accessTokenRefresher();
-        let authorization = await refreshAccessToken.accessToken;
-
+        let refreshAccessToken = this.accessToken;
 
         let fetchResult = await fetch('https://api.glovoapp.com/v3/stores?category=GROCERIES_UA', {
             headers: {
                 'glovo-location-city-code': 'DNP', //todo: get field from glovo
                 'glovo-language-code': 'ru',
-                'glovo-delivery-location-latitude': 'latitude',//todo: your latitude
-                'glovo-delivery-location-longitude': 'longitude',//todo: your longitude
+                'glovo-delivery-location-latitude': '48.413933',//todo: ather
+                'glovo-delivery-location-longitude': '35.044598',//todo: ather
                 'glovo-delivery-location-timestamp': timestamp,
                 'glovo-delivery-location-accuracy': '0'
             }
@@ -112,28 +126,26 @@ class GlovoAPI {
         let url = `https://api.glovoapp.com/v3/stores/${stores}/addresses/${addresses}/search?query=${item}`;
         let encodedUrl = encodeURI(url);
         return encodedUrl;
-    }
-
-    async accessTokenRefresher() {
-        const refreshAccessToken = await this.getRefreshToken();
-        let authorization = await refreshAccessToken.accessToken;
-        let headers = {
-            'authorization': authorization,
-            'glovo-location-city-code': 'DNP', //todo: get field from glovo
-            'glovo-language-code': 'ru'
-        }
-        return { 'headers': headers };
-    }
+    }    
 
     async getSearch(shop, item) {
         let url = await this.generateUrl(shop, item);
 
-        let refreshAccessToken = await this.accessTokenRefresher(); //todo: refresh after 19 min
-
         let fetchResult = await fetch(url, {
-            headers: refreshAccessToken.headers
+            headers: {
+                'authorization': this.accessToken,
+                'glovo-location-city-code': 'DNP', //todo: get field from glovo
+                'glovo-language-code': 'ru'
+            }
         });
         let jsonWithResults = await fetchResult.json();
+
+        if(jsonWithResults.error){
+            if(jsonWithResults.error.message){
+                console.log(jsonWithResults.error.message);
+            }
+            else console.log("Some error from server")
+        }
 
         //todo: consider the answer - bad request
         //todo: if error - refresh token
