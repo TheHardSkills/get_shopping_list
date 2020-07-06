@@ -46,7 +46,6 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             divForItem.className = "divForOneItem";
-            debugger;
             let divForItemId = divForItem.id = "divForItem" + oneListItem.numb
 
             varus.type = "button";
@@ -103,12 +102,10 @@ const deleteFunction = () => {
 };
 
 
-debugger;
 async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId) {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
     console.log(store);
-    debugger;
     let itemOptions = await fetch(`/api/searchItems?store=${store}&seachWord=${value}`, {
         headers: {
             'Content-Type': 'application/json',

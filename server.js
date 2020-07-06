@@ -15,8 +15,8 @@ app.use(express.static('./public'));
 
 app.get("/getList", function (request, response) {
     let exportSettings = {
-        email: accessSettings.email,
-        password: accessSettings.password
+        email: accessSettings.shoppingListCredentials.email,
+        password: accessSettings.shoppingListCredentials.password
     };
 
     async function res1() {

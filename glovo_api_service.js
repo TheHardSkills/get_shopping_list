@@ -20,7 +20,8 @@ class GlovoAPI {
     }
 
     async getToken() {
-        const accesses = accessSettings.accesses;
+        let accesses = accessSettings.glovoCredentials;
+        accesses.grantType = "password";
 
         let response = await fetch('https://api.glovoapp.com/oauth/token', {
             method: 'POST',
@@ -125,7 +126,7 @@ class GlovoAPI {
         let url = `https://api.glovoapp.com/v3/stores/${stores}/addresses/${addresses}/search?query=${item}`;
         let encodedUrl = encodeURI(url);
         return encodedUrl;
-    }    
+    }
 
     async getSearch(shop, item) {
         let url = await this.generateUrl(shop, item);
@@ -139,8 +140,8 @@ class GlovoAPI {
         });
         let jsonWithResults = await fetchResult.json();
 
-        if(jsonWithResults.error){
-            if(jsonWithResults.error.message){
+        if (jsonWithResults.error) {
+            if (jsonWithResults.error.message) {
                 console.log(jsonWithResults.error.message);
             }
             else console.log("Some error from server")
