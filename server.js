@@ -1,6 +1,6 @@
 const googleshoppinglist = require('./google-shopping-list/index');
 const express = require('express');
-const accessSettings = require('./public/settings.js');
+const accessSettings = require('./settings.js');
 const MongoClient = require('mongodb').MongoClient;
 const GlovoAPI = require('./glovo_api_service.js');
 

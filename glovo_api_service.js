@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const accessSettings = require('./public/settings.js');
+const accessSettings = require('./settings.js');
 
 
 class GlovoAPI {
