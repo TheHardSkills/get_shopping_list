@@ -46,7 +46,7 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             divForItem.className = "divForOneItem";
-            let divForItemId = divForItem.id = "divForItem" + oneListItem.numb
+            let divForItemId = divForItem.id = "divForItem" + oneListItem.numb;
 
             varus.type = "button";
             let varusValue = varus.value = "varus";
@@ -119,9 +119,9 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
         let divForOne = document.getElementById(productOptionsDiv);
 
         let divForInfoAboutOneItem = document.createElement('div');
-        divForInfoAboutOneItem.className = "divForInfoAboutOneItem slider__item"; 
+        divForInfoAboutOneItem.className = "divForInfoAboutOneItem slider__item";
 
-        let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + idCounter;
+        let divForInfoAboutOneItemId = divForInfoAboutOneItem.id = "divForInfoAboutOneItem" + idCounter + "_" + divForItemId;
         divForOne.append(divForInfoAboutOneItem);
 
         let imgOfProduct = document.createElement('img');
@@ -138,12 +138,12 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
         priceOfProduct.className = "priceOfProduct";
         let priceOfProductId = priceOfProduct.id = "priceOfProduct" + idCounter;
         divForInfoAboutOneItem.append(priceOfProduct);
-        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };   
+        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };
 
-        let product = document.querySelector('#'+productOptionsDiv+' #'+nameOfProductId);
+        let product = document.querySelector('#' + productOptionsDiv + ' #' + nameOfProductId);
         product.innerText = oneOfItem.name;
-        document.querySelector('#'+productOptionsDiv+' #'+priceOfProductId).innerText = oneOfItem.price;
-        let img = document.querySelector('#'+productOptionsDiv+' #'+imgOfProductId);
+        document.querySelector('#' + productOptionsDiv + ' #' + priceOfProductId).innerText = oneOfItem.price;
+        let img = document.querySelector('#' + productOptionsDiv + ' #' + imgOfProductId);
         img.src = oneOfItem.imageUrl;
         idCounter++;
     });
@@ -231,6 +231,6 @@ const chooseProduct = (productId, nameOfProductId) => {
     let productName = document.getElementById(nameOfProductId).innerText;
     console.log(productName);
 
-    document.getElementById(productId).style.border="1px solid green";
+    document.getElementById(productId).style.background = "green";
 
 }
