@@ -162,6 +162,51 @@ class GlovoAPI {
         });
         return arrWithInfo;
     }
+
+    async sendOrder(fieldsToSend) {
+        let bodyToSendTheOrder = {
+            "points": [
+                {
+                    "address": fieldsToSend.address,
+                    "type": "DELIVERY"
+                }
+            ],
+            "scheduledTime": null,
+            "type": "Order",
+            "subtype": "PURCHASE",
+            "cityCode": "DNP",
+            "origin": "STORES",
+            "legalCheckboxAccepted": false,
+            "agreedToShareData": false,
+            "cutleryRequested": null,
+            "paymentMethod": fieldsToSend.paymentMethod,
+            "products": fieldsToSend.products,
+            "storeAddressId": fieldsToSend.storeAddressId
+        };
+        let res = bodyToSendTheOrder;
+        //coordinates and timestamp //24
+        /*let response = await fetch('https://api.glovoapp.com/v3/checkouts/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'authorization': 123,//this.accessToken,
+                'glovo-app-version': '7',
+                'glovo-api-version': '13',
+                'glovo-device-id': '97548324',
+                'Glovo-Delivery-Location-Latitude': fieldsToSend.address.latitude,
+                'Glovo-Delivery-Location-Longitude': fieldsToSend.address.longitude,
+                'Glovo-Delivery-Location-Timestamp':,
+                'Glovo-Language-Code': 'ru',
+                'Glovo-Location-City-Code': 'DNP'
+
+            },
+            body: JSON.stringify(bodyToSendTheOrder)
+        });
+        resultInText = await response.text();
+        result = await JSON.parse(resultInText);
+        */
+    }
 }
 
 module.exports = GlovoAPI;

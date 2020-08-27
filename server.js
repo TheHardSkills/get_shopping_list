@@ -3,6 +3,7 @@ const express = require('express');
 const accessSettings = require('./settings.js');
 const MongoClient = require('mongodb').MongoClient;
 const GlovoAPI = require('./glovo_api_service.js');
+const bodyParser = require('body-parser')
 
 const url = "mongodb://localhost:27017/";
 const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
@@ -54,24 +55,31 @@ mongoClient.connect(function (err, client) {
 });
 
 app.get("/api/food", function (req, res) {
-
     const collection = req.app.locals.collection;
     collection.find({}).toArray(function (err, food) {
-
         if (err) return console.log(err);
         res.send(food);
     });
 });
 
 app.get(`/api/searchItems`, function (req, res) {
-
     async function getVariants() {
-        var shop = req.query.store;
-        var searchWord = req.query.seachWord;
+        let shop = req.query.store;
+        let searchWord = req.query.seachWord;
         let baseResult = await glovoAPI.getSearch(shop, searchWord);
         res.send(baseResult);
     }
     getVariants();
+});
+var jsonParser = bodyParser.json()
+app.post(`/api/order`, jsonParser, function (req, res) {
+    async function getOrder(){
+        let someFieldsForCreateOrderRequest = req.body;
+        let result = await glovoAPI.sendOrder(someFieldsForCreateOrderRequest);
+
+        res.send(someFieldsForCreateOrderRequest);
+    }
+    getOrder();
 
 });
 

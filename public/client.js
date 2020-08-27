@@ -46,19 +46,19 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
             divForItem.className = "divForOneItem";
-            let divForItemId = divForItem.id = "divForItem" + oneListItem.numb;
 
+            let divForItemId = divForItem.id = "divForItem" + oneListItem.numb;
             varus.type = "button";
             let varusValue = varus.value = "varus";
-            varus.onclick = () => { getNameOfTheStore(varusValue, itemId, productOptionsDiv, divForItemId) };
+            varus.onclick = () => { getProductOptions(varusValue, itemId, productOptionsDiv, divForItemId) };
 
             ashan.type = "button";
             let ashanValue = ashan.value = "ashan";
-            ashan.onclick = () => { getNameOfTheStore(ashanValue, itemId, productOptionsDiv, divForItemId) };
+            ashan.onclick = () => { getProductOptions(ashanValue, itemId, productOptionsDiv, divForItemId) };
 
             metro.type = "button";
             let metroValue = metro.value = "metro";
-            metro.onclick = () => { getNameOfTheStore(metroValue, itemId, productOptionsDiv, divForItemId) };
+            metro.onclick = () => { getProductOptions(metroValue, itemId, productOptionsDiv, divForItemId) };
 
             leftArrow.className = "slider__control slider__control_left";
             leftArrow.href = "#";
@@ -86,7 +86,16 @@ fetch('http://localhost:3000/getList', { //todo: relative path
         input.id = "deleteBttn";
         input.onclick = deleteFunction;
         p.append(input);
+
+        let orderBttn = document.createElement('input');
+        orderBttn.type = "submit";
+        orderBttn.value = "Create order";
+        orderBttn.id = "orderBttn";
+        orderBttn.onclick = createOrder;
+        p.append(orderBttn);
+
         document.body.append(p);
+
     });
 
 const deleteFunction = () => {
@@ -102,10 +111,12 @@ const deleteFunction = () => {
 };
 
 
-async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId) {
+
+async function getProductOptions(store, itemId, productOptionsDiv, divForItemId) {
     const value = document.getElementById(itemId).innerText;
     console.log(value);
     console.log(store);
+
     let itemOptions = await fetch(`/api/searchItems?store=${store}&seachWord=${value}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -131,14 +142,15 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
 
         let nameOfProduct = document.createElement('p');
         nameOfProduct.className = "nameOfProduct";
-        let nameOfProductId = nameOfProduct.id = "nameOfProduct" + idCounter;
+        let nameOfProductId = nameOfProduct.id = "nameOfProduct" + idCounter + "_" + divForInfoAboutOneItemId;
         divForInfoAboutOneItem.append(nameOfProduct);
 
         let priceOfProduct = document.createElement('p');
         priceOfProduct.className = "priceOfProduct";
         let priceOfProductId = priceOfProduct.id = "priceOfProduct" + idCounter;
         divForInfoAboutOneItem.append(priceOfProduct);
-        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId) };
+
+        divForInfoAboutOneItem.onclick = () => { chooseProduct(divForInfoAboutOneItemId, nameOfProductId, oneOfItem.id, oneOfItem.price) };
 
         let product = document.querySelector('#' + productOptionsDiv + ' #' + nameOfProductId);
         product.innerText = oneOfItem.name;
@@ -227,10 +239,90 @@ async function getNameOfTheStore(store, itemId, productOptionsDiv, divForItemId)
     multiItemSlider('.slider', divForItemId);
 }
 
-const chooseProduct = (productId, nameOfProductId) => {
+let arrayOfSelectedItems = [];
+const chooseProduct = (productDivId, nameOfProductId, productId, productPrice) => {
     let productName = document.getElementById(nameOfProductId).innerText;
     console.log(productName);
+    console.log(productId);
 
-    document.getElementById(productId).style.background = "green";
+    let element = document.getElementById(productDivId);
+    element.style.background = "green";
+    let nameAndPriceObj = {};
+    nameAndPriceObj.id = productId;
+    nameAndPriceObj.price = productPrice;
+
+    arrayOfSelectedItems.push(nameAndPriceObj);
+}
+
+const createOrder = () => {
+
+    const calculatePrice = () => {
+        let totalAmount = null;
+        arrayOfSelectedItems.map(nameAndNameObj => {
+            totalAmount += nameAndNameObj.price;
+        });
+        return Math.round(totalAmount);
+    }
+
+    const getIdOfProductForOrder = () => {
+        let productId = [];
+        arrayOfSelectedItems.map(nameAndNameObj => {
+            let idAndQuantity = {
+                "id": nameAndNameObj.id,
+                "quantity": 1
+            }
+            productId.push(idAndQuantity);
+        });
+        return productId;
+    }
+
+    const generateDataForRequest = () => {
+        //todo: address - should be taken from the response of the request
+        let address = {
+            "label": "ж/м Сокол-1",
+            "latitude": 48.413933,
+            "longitude": 35.044598,
+            "details": "дом 1, корпус 1, подъезд 2, встречу курьера у подъезда",
+            "customFields": null
+        }
+        //todo: paymentMethod - payment type selection 
+        //todo: amount - sum + 60 доставка - если с ПК 
+        let paymentMethod = {
+            "type": "Cash",
+            "amount": calculatePrice()
+        }
+        let products = getIdOfProductForOrder();
+        let storeAddressId = 165396;
+
+        let resultObject = {};
+        resultObject.address = address;
+        resultObject.paymentMethod = paymentMethod;
+        resultObject.products = products;
+        resultObject.storeAddressId = storeAddressId;
+
+        return resultObject;
+    }
+
+    async function orderCreator() {
+        
+        let requestData = generateDataForRequest();
+
+        console.log('arrayOfSelectedItems');
+        console.log(arrayOfSelectedItems);
+        let orderOptions = await fetch('/api/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestData)//arrayOfSelectedItems
+        });
+        let a = await orderOptions.text();
+        console.log(a);
+        //let jsonWithResults = await orderOptions.json();
+        // console.log('jsonWithResults');
+        //console.log(jsonWithResults);
+    }
+    orderCreator();
 
 }
