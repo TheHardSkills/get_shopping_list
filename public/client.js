@@ -41,7 +41,6 @@ fetch('http://localhost:3000/getList', { //todo: relative path
 
             divForProductOptionWraper.className = "slider";
 
-
             divForProductOption.className = "divForOneProductOption slider__wrapper";
             let productOptionsDiv = divForProductOption.id = "productOptions" + oneListItem.numb;
 
@@ -79,20 +78,22 @@ fetch('http://localhost:3000/getList', { //todo: relative path
             p[0].append(divForItem);
         });
 
+        let makeAnOrderBlock = document.getElementById("makeAnOrder");
+
         let p = document.createElement('p');
         let input = document.createElement('input');
         input.type = "submit";
         input.value = "Delete";
         input.id = "deleteBttn";
         input.onclick = deleteFunction;
-        p.append(input);
+        makeAnOrderBlock.append(input);
 
         let orderBttn = document.createElement('input');
         orderBttn.type = "submit";
         orderBttn.value = "Create order";
         orderBttn.id = "orderBttn";
         orderBttn.onclick = createOrder;
-        p.append(orderBttn);
+        makeAnOrderBlock.append(orderBttn);
 
         document.body.append(p);
 
@@ -261,6 +262,8 @@ const createOrder = () => {
         arrayOfSelectedItems.map(nameAndNameObj => {
             totalAmount += nameAndNameObj.price;
         });
+        console.log("totalAmount");
+        console.log(Math.round(totalAmount));
         return Math.round(totalAmount);
     }
 
@@ -295,30 +298,40 @@ const createOrder = () => {
         let storeAddressId = 165396;
 
         let resultObject = {};
-        resultObject.address = address;
+        resultObject.agreedToShareData = false;
+        resultObject.cityCode = "DNP";
+        resultObject.cutleryRequested = null;
+        resultObject.legalCheckboxAccepted = false;
+        resultObject.origin = "STORES";
         resultObject.paymentMethod = paymentMethod;
+        resultObject.points = [{ address: address, type: "DELIVERY" }];
         resultObject.products = products;
+        resultObject.scheduledTime = null;
         resultObject.storeAddressId = storeAddressId;
+        resultObject.subtype = "PURCHASE";
+        resultObject.type = "Order";
 
         return resultObject;
     }
 
     async function orderCreator() {
-        
         let requestData = generateDataForRequest();
+        console.log('requestData');
+        console.log(requestData);
 
-        console.log('arrayOfSelectedItems');
-        console.log(arrayOfSelectedItems);
-        let orderOptions = await fetch('/api/order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(requestData)//arrayOfSelectedItems
-        });
-        let a = await orderOptions.text();
-        console.log(a);
+        //- console.log('arrayOfSelectedItems');
+        //- console.log(arrayOfSelectedItems);
+        //- let orderOptions = await fetch('/api/order', {//api.glovoapp.com/v3/checkouts/order
+        //-     method: 'POST',
+        //-     headers: {
+        //-         'Content-Type': 'application/json',
+        //-         'Accept': 'application/json'
+        //-     },
+        //-     body: JSON.stringify(requestData)//arrayOfSelectedItems
+        //- });
+        //- let a = await orderOptions.text();
+        //- console.log(a);
+
         //let jsonWithResults = await orderOptions.json();
         // console.log('jsonWithResults');
         //console.log(jsonWithResults);

@@ -95,7 +95,6 @@ class GlovoAPI {
 
     async generateUrl(shop, item) {
         let availability = await this.getAffordableStores();
-
         let varus = {
             stores: 86583,
             addresses: 165396

@@ -73,14 +73,12 @@ app.get(`/api/searchItems`, function (req, res) {
 });
 var jsonParser = bodyParser.json()
 app.post(`/api/order`, jsonParser, function (req, res) {
-    async function getOrder(){
+    async function getOrder() {
         let someFieldsForCreateOrderRequest = req.body;
         let result = await glovoAPI.sendOrder(someFieldsForCreateOrderRequest);
-
         res.send(someFieldsForCreateOrderRequest);
     }
     getOrder();
-
 });
 
 
