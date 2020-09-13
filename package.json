@@ -10,7 +10,7 @@
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.18",
     "node": "^14.3.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "puppeteer": "^3.3.0",
     "request": "^2.88.2",
     "winston": "^3.2.1"
